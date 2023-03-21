@@ -11,17 +11,20 @@ dotenv.config();
 export const createUser = async (req, res) => {
   console.log("Creating User");
   const { name, email, password } = req.body;
+  console.log(password);
 
   const existingUser = await User.findOne({ email: email });
   if (existingUser)
     return res.status(400).send("User with given email already exists");
   const user = new User({
     name,
-    email: email,
+    email,
     password,
   });
 
   await user.generateHashedPassword();
+
+  console.log(user);
 
   try {
     const savedUser = await user.save();
@@ -53,7 +56,9 @@ export const login = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const user = await User.find();
-    res.status(200).json(user);
+    user
+      ? res.status(200).json(user)
+      : res.status(200).json({ message: "No Users Found" });
   } catch (err) {
     res.status(404).json({ message: err });
   }

@@ -7,15 +7,15 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
       min: 3,
-      max: 10,
+      max: 25,
     },
     email: {
       type: String,
     },
     password: {
       type: String,
-      min: 3,
-      max: 10,
+      min: 8,
+      max: 25,
     },
     role: {
       type: String,
@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema(
 
 UserSchema.methods.generateHashedPassword = async function () {
   //generateHashedPassword
+  console.log("Password is", this.password);
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 };

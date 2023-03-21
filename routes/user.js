@@ -6,6 +6,7 @@ import auth from "../middlewares/auth.js";
 
 router.post("/register", createUser);
 router.post("/login", login);
-router.get("/user", auth, admin, getUsers);
+// router.get("/user", auth, admin, getUsers);
+router.get("/", getUsers);
 
 export default router;
