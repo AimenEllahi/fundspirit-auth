@@ -6,6 +6,8 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.js";
+import campaignRoutes from "./routes/campaign.js";
+import organizationRoutes from "./routes/organization.js";
 //Configuration
 dotenv.config();
 const PORT = process.env.PORT || 8800;
@@ -18,6 +20,10 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use("/api/users/", userRoutes);
+//for campaign routes
+app.use("/api/campaigns/", campaignRoutes);
+//for organization routes
+app.use("/api/organizations/", organizationRoutes);
 
 app.get("/", (req, res) => {
   res.send("We are on home page");
