@@ -8,18 +8,21 @@ const CampaignSchema = new mongoose.Schema(
     },
     description: {
       type: String,
+      require: true,
     },
-    image: { 
-        type: String,
+    image: {
+      type: String,
     },
     tags: {
-        type: Array,
+      type: Array,
     },
+    address: {
+      type: String,
+      require: true,
     },
+  },
   { timestamps: true }
-
 );
-
 
 const campaign = mongoose.model("Campaign", CampaignSchema);
 export default campaign;
