@@ -1,9 +1,13 @@
 //to make get and create methods for campaigns
-import Campaign from "../models/campaign.js";
+import Campaign from "../models/Campaign.js";
+
+console.log(Campaign)
 
 //to create campaigns
 export const createCampaign = async (req, res) => {
     const { name, description, image, tags } = req.body;
+
+    console.log(req.body)
     try {
         const newCampaign = new Campaign({
         name,
@@ -11,6 +15,8 @@ export const createCampaign = async (req, res) => {
         image,
         tags,
         });
+
+        console.log(newCampaign)
         await newCampaign.save();
         res.status(201).json(newCampaign);
     } catch (error) {

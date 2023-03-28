@@ -12,6 +12,19 @@ const OrganizationSchema = new mongoose.Schema(
         address: {
             type: String,
         },
+        SECP: {
+            type: String,
+        },
+        backdrop: {
+            type: String,
+        },
+        isApproved: {
+            type: Boolean,
+            default: false,
+        },
+        logo: {
+            type: String,
+        },
     },
     { timestamps: true }
 );
