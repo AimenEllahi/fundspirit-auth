@@ -1,12 +1,17 @@
 import organization from "../models/Organization.js";
 
 export const createOrganization = async (req, res) => {
-    const { name, description, address } = req.body;
+    const { name, description, address, SECP, backdrop, isApproved, logo
+     } = req.body;
     try {
         const newOrganization = new organization({
         name,
         description,
         address,
+        SECP,
+        backdrop,
+        isApproved,
+        logo,
         });
         await newOrganization.save();
         res.status(201).json(newOrganization);
