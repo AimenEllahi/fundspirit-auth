@@ -52,7 +52,7 @@ export const deploySmartContract = async () => {
     })
       .send({
         from: accounts[0],
-        gas: 1500000,
+        gas: gasEstimate,
         gasPrice,
       })
       .on("receipt", (receipt) => {});
