@@ -23,7 +23,7 @@ app.use("/api/users/", userRoutes);
 //for campaign routes
 app.use("/api/campaigns/", campaignRoutes);
 //for organization routes
-app.use("/api/organizations/", organizationRoutes);
+app.use("/api/npos/", organizationRoutes);
 
 app.get("/", (req, res) => {
   res.send("We are on home page");
