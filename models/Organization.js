@@ -67,6 +67,17 @@ const OrganizationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    approveDate: {
+      type: Date,
+    },
+    password: {
+      type: String,
+    },
+    campaigns: {
+      type: Array,
+      maxLength: 3,
+      //max length
+    },
   },
   { timestamps: true }
 );

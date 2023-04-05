@@ -20,6 +20,9 @@ const CampaignSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    enrolledNPOs: {
+      type: Array,
+    },
   },
   { timestamps: true }
 );

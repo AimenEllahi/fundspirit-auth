@@ -8,6 +8,13 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 import organizationRoutes from "./routes/organization.js";
+import ejs from "ejs";
+
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 //Configuration
 dotenv.config();
 const PORT = process.env.PORT || 8800;
@@ -18,7 +25,9 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 app.use(cookieParser());
+app.set("view engine", "ejs");
 
+app.set("views", __dirname + "/views");
 app.use("/api/users/", userRoutes);
 //for campaign routes
 app.use("/api/campaigns/", campaignRoutes);

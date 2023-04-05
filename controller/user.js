@@ -9,7 +9,6 @@ import _ from "lodash";
 dotenv.config();
 
 export const createUser = async (req, res) => {
-  console.log("Creating User");
   const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email: email });
@@ -23,8 +22,6 @@ export const createUser = async (req, res) => {
 
   await user.generateHashedPassword();
 
-  console.log(user);
-
   try {
     const savedUser = await user.save();
 
@@ -36,20 +33,22 @@ export const createUser = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email, password);
-  const existingUser = await User.findOne({ email: email });
-  if (!existingUser) return res.status(400).send("User is not registered");
-  const isValid = await bcrypt.compare(password, existingUser.password);
-  if (!isValid) return res.status(401).send("Invalid Password");
-  const token = jwt.sign(
-    {
-      _id: existingUser._id,
-      name: existingUser.name,
-    },
-    process.env.jwtPrivateKey
-  );
-  console.log(token);
-  res.send({ token, user: _.pick(existingUser, ["name", "email", "role"]) });
+  try {
+    const existingUser = await User.findOne({ email: email });
+    if (!existingUser) return res.status(400).send("User is not registered");
+    const isValid = await bcrypt.compare(password, existingUser.password);
+    if (!isValid) return res.status(401).send("Invalid Password");
+    const token = jwt.sign(
+      {
+        _id: existingUser._id,
+        name: existingUser.name,
+      },
+      process.env.jwtPrivateKey
+    );
+    res.send({ token, user: _.pick(existingUser, ["name", "email", "role"]) });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 };
 
 export const getUsers = async (req, res) => {
