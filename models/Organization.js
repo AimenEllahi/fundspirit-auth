@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const OrganizationSchema = new mongoose.Schema(
   {
+    addressHash: {
+      type: String,
+      required: true,
+    },
     name: {
       type: String,
       required: true,

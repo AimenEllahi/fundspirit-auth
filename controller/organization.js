@@ -1,7 +1,10 @@
 import NPO from "../models/Organization.js";
 import Campaign from "../models/Campaign.js";
 import bcrypt from "bcryptjs";
-
+import Web3 from "web3";
+import { sendEmail } from "../Utilities/NodeMailer.js";
+import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organization.json" assert { type: "json" };
+const web3 = new Web3("http://localhost:8545"); // replace with the URL of your Ethereum node
 export const createOrganization = async (req, res) => {
   const {
     name,
@@ -23,7 +26,9 @@ export const createOrganization = async (req, res) => {
   } = req.body;
 
   try {
+    const addressHash = await deploySmartContract();
     const newOrganization = new NPO({
+      addressHash,
       name,
       category,
       email,
@@ -42,10 +47,34 @@ export const createOrganization = async (req, res) => {
       foundThrough,
     });
     await newOrganization.save();
-    console.log(newOrganization);
+
     res.status(201).json(newOrganization);
   } catch (error) {
     res.status(409).json({ message: error.message });
+  }
+};
+
+const deploySmartContract = async (id) => {
+  const accounts = await web3.eth.getAccounts();
+  try {
+    const Contract = new web3.eth.Contract(OrganizationAbi.abi);
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasEstimate = await Contract.deploy({
+      data: OrganizationAbi.bytecode,
+    }).estimateGas();
+    const contractInstance = await Contract.deploy({
+      data: OrganizationAbi.bytecode,
+    })
+      .send({
+        from: accounts[0],
+        gas: gasEstimate,
+        gasPrice,
+      })
+      .on("receipt", (receipt) => {});
+
+    return contractInstance.options.address;
+  } catch (error) {
+    return error;
   }
 };
 
@@ -61,6 +90,7 @@ export const getOrganizations = async (req, res) => {
 export const getOrganizationRequests = async (req, res) => {
   try {
     const organizations = await NPO.find({ isApproved: false });
+
     res.status(200).json(organizations);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -71,7 +101,7 @@ export const getNPO = async (req, res) => {
   const { id } = req.params;
   try {
     const organization = await NPO.findById(id);
-    console.log(organization);
+
     res.status(200).json(organization);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -86,6 +116,8 @@ export const approveNPO = async (req, res) => {
       { isApproved: true, approveDate: new Date().toISOString() },
       { new: true }
     );
+
+    sendEmail(organization.email, organization.name, organization._id);
     res.status(200).json(organization);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -94,7 +126,7 @@ export const approveNPO = async (req, res) => {
 
 export const passwordView = (req, res) => {
   const { id } = req.params;
-  console.log(id);
+
   // Node.js code
   const errorMessage = "";
   res.render("createPassword", { errorMessage, id });
@@ -108,7 +140,7 @@ export const setPassword = async (req, res) => {
   } else {
     try {
       const hashedPassword = await bcrypt.hashSync(password, 10);
-      console.log(hashedPassword);
+
       const npo = await NPO.findByIdAndUpdate(
         id,
         { password: hashedPassword },
@@ -116,7 +148,9 @@ export const setPassword = async (req, res) => {
       );
       res.status(200).json(npo);
     } catch (error) {
-      console.log(error);
+      res.status(500).json({
+        message: "Something went wrong",
+      });
     }
   }
 };
@@ -126,27 +160,24 @@ export const login = async (req, res) => {
 
   try {
     const npo = await NPO.findOne({ email: email });
-    console.log(npo);
+
     if (!npo) {
-      console.log("not found");
       res.status(404).json({ message: "NPO not found" });
     }
     const isPasswordCorrect = await bcrypt.compare(password, npo.password);
     if (!isPasswordCorrect) {
-      console.log("here");
       res.status(400).json({ message: "Invalid credentials" });
     }
-    console.log(npo);
+
     res.status(200).json(npo);
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
 
 export const enrollCampaign = async (req, res) => {
   const { id, campaignId } = req.body;
-  console.log(id, campaignId);
+
   try {
     const existingNPO = await NPO.findById(id);
     const existingCampaign = await Campaign.findById(campaignId);
@@ -193,7 +224,5 @@ export const unEnroll = async (req, res) => {
       campaigns: [],
     });
     res.status(200).json({ message: "Unenrolled" });
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 };
