@@ -8,12 +8,13 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 import organizationRoutes from "./routes/organization.js";
+
 import { sendEmail } from "./Utilities/NodeMailer.js";
 import ejs from "ejs";
 
 import { fileURLToPath } from "url";
 import path from "path";
-
+import { main } from "./Utilities/CroneJob.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 //Configuration
@@ -52,6 +53,7 @@ mongoose
   })
   .then(() => {
     app.listen(PORT, () => console.log("Server Running on Port: ", PORT));
+    // main();
   })
   .catch((error) => {
     console.log(error);

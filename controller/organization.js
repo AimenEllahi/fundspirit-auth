@@ -4,7 +4,9 @@ import bcrypt from "bcryptjs";
 import Web3 from "web3";
 import { sendEmail } from "../Utilities/NodeMailer.js";
 import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organization.json" assert { type: "json" };
+import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
 const web3 = new Web3("http://localhost:8545"); // replace with the URL of your Ethereum node
+const accounts = await web3.eth.getAccounts();
 export const createOrganization = async (req, res) => {
   const {
     name,
@@ -54,8 +56,7 @@ export const createOrganization = async (req, res) => {
   }
 };
 
-const deploySmartContract = async (id) => {
-  const accounts = await web3.eth.getAccounts();
+export const deploySmartContract = async (id) => {
   try {
     const Contract = new web3.eth.Contract(OrganizationAbi.abi);
     const gasPrice = await web3.eth.getGasPrice();
@@ -163,10 +164,13 @@ export const login = async (req, res) => {
 
     if (!npo) {
       res.status(404).json({ message: "NPO not found" });
+
+      return;
     }
     const isPasswordCorrect = await bcrypt.compare(password, npo.password);
     if (!isPasswordCorrect) {
       res.status(400).json({ message: "Invalid credentials" });
+      return;
     }
 
     res.status(200).json(npo);
@@ -182,14 +186,25 @@ export const enrollCampaign = async (req, res) => {
     const existingNPO = await NPO.findById(id);
     const existingCampaign = await Campaign.findById(campaignId);
     if (!existingNPO) return res.status(404).json({ message: "NPO not found" });
-    if (existingNPO.campaigns.includes(campaignId))
-      return res.status(400).json({ message: "Already enrolled" });
+    if (existingNPO.campaigns.includes(campaignId)) {
+      console.log("Already enrolled");
+      res.status(400).json({ message: "Already enrolled" });
+      return;
+    }
     if (existingNPO.campaigns.length >= 3)
       return res
         .status(400)
         .json({ message: "You can only enroll in 3 campaigns" });
     if (!existingCampaign)
       return res.status(404).json({ message: "Campaign not found" });
+
+    const campaignSM = await new web3.eth.Contract(
+      CampaignAbi.abi,
+      existingCampaign.address
+    );
+    await campaignSM.methods.enrollOrganization(existingNPO.addressHash).send({
+      from: accounts[0],
+    });
 
     const updatedNPO = await NPO.findByIdAndUpdate(
       id,
@@ -213,6 +228,7 @@ export const enrollCampaign = async (req, res) => {
 
     res.status(200).json(updatedNPO);
   } catch (error) {
+    console.log(error.message);
     res.status(404).json({ message: error.message });
   }
 };

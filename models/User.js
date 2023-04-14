@@ -1,6 +1,20 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
+const transactionHashSchema = new mongoose.Schema(
+  {
+    hash: String,
+    amount: Number,
+    campaign: {
+      id: String,
+      name: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -17,10 +31,22 @@ const UserSchema = new mongoose.Schema(
       min: 8,
       max: 25,
     },
+
     role: {
       type: String,
       default: "user",
     },
+    totalFunding: {
+      type: Number,
+      default: 0,
+    },
+    campaignsFunded: {
+      type: Array,
+    },
+    campaignsLiked: {
+      type: Array,
+    },
+    transactions: [transactionHashSchema],
   },
   { timestamps: true }
 );

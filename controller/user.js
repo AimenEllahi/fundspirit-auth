@@ -45,7 +45,10 @@ export const login = async (req, res) => {
       },
       process.env.jwtPrivateKey
     );
-    res.send({ token, user: _.pick(existingUser, ["name", "email", "role"]) });
+    res.send({
+      token,
+      user: _.pick(existingUser, ["name", "email", "role", "_id"]),
+    });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -61,5 +64,29 @@ export const getUsers = async (req, res) => {
       : res.status(200).json({ message: "No Users Found" });
   } catch (err) {
     res.status(404).json({ message: err });
+  }
+};
+
+export const addTransaction = async (req, res) => {
+  const details = req.body;
+  const { id } = req.params;
+  try {
+    console.log(id);
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      res.status(404).json({ message: "User Not Found" });
+      return;
+    }
+
+    console.log(existingUser._id);
+    existingUser.transactions.push(details);
+    existingUser.campaignsFunded.push(details.campaign.id);
+    existingUser.totalFunding += details.amount;
+    await existingUser.save();
+
+    res.status(200).json(existingUser);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ Message: "Something Went Wrong" });
   }
 };

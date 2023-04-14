@@ -23,6 +23,14 @@ const CampaignSchema = new mongoose.Schema(
     enrolledNPOs: {
       type: Array,
     },
+    lastDisburse: {
+      type: Date,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true }
 );
