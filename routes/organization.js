@@ -11,18 +11,22 @@ import {
   enrollCampaign,
   unEnroll,
 } from "../controller/organization.js";
+import auth from "../middlewares/auth.js";
+import admin from "../middlewares/admin.js";
 const router = express.Router();
 
 router.post("/", createOrganization);
 router.get("/", getOrganizations);
-router.get("/requests", getOrganizationRequests);
+router.get("/requests",auth, admin, getOrganizationRequests);
 router.get("/:id", getNPO);
-router.put("/approve/:id", approveNPO);
+router.put("/approve/:id",auth, admin, approveNPO);
 
 router.get("/createpassword/:id", passwordView);
 router.post("/createpassword/:id", setPassword);
 router.post("/login", login);
-router.put("/enroll", enrollCampaign);
+router.put("/enroll",auth, enrollCampaign);
+
+//test route
 router.get("/unenroll/:id", unEnroll);
 
 export default router;

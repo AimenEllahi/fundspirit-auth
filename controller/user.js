@@ -47,7 +47,16 @@ export const login = async (req, res) => {
     );
     res.send({
       token,
-      user: _.pick(existingUser, ["name", "email", "role", "_id"]),
+      user: _.pick(existingUser, [
+        "name",
+        "email",
+        "role",
+        "_id",
+        "campaignsFunded",
+        "campaignsLiked",
+        "transactions",
+        "totalFunding",
+      ]),
     });
   } catch (error) {
     res.status(500).json({ error });
@@ -55,10 +64,10 @@ export const login = async (req, res) => {
 };
 
 export const getUsers = async (req, res) => {
-  console.log("Getting Users");
+
   try {
     const user = await User.find();
-    console.log(user);
+
     user
       ? res.status(200).json(user)
       : res.status(200).json({ message: "No Users Found" });

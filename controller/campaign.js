@@ -6,12 +6,10 @@ import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organizatio
 import { deploySmartContract as orgContract } from "./organization.js";
 const web3 = new Web3("http://localhost:8545"); // replace with the URL of your Ethereum node
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
-
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
 //to create campaigns
 export const createCampaign = async (req, res) => {
   const { name, description, image, tags } = req.body;
+  console.log(req.body);
 
   try {
     const address = await deploySmartContract();
