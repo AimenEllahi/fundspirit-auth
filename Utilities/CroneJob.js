@@ -27,7 +27,9 @@ const web3 = new Web3("http://localhost:8545"); //
 //       CampaignAbi.abi,
 //       campaign.address
 //     );
-//     await contractInstance.methods.disburseFunds().call();
+//     await contractInstance.methods.disburseFunds().send({
+//     from: accounts[0],
+//  });
 //   });
 // });
 

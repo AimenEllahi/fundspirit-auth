@@ -1,5 +1,25 @@
 import mongoose from "mongoose";
 
+const OrderSchema = new mongoose.Schema(
+  {
+    orderId: {
+      type: String,
+    },
+    amount: {
+      type: Number,
+    },
+    transactionHash: {
+      type: String,
+    },
+    vendorName: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const OrganizationSchema = new mongoose.Schema(
   {
     addressHash: {
@@ -82,6 +102,11 @@ const OrganizationSchema = new mongoose.Schema(
       maxLength: 3,
       //max length
     },
+    totalFundsDisbursed: {
+      type: Number,
+      default: 0,
+    },
+    orders: [OrderSchema],
   },
   { timestamps: true }
 );

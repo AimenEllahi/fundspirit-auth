@@ -8,7 +8,7 @@ const web3 = new Web3("http://localhost:8545"); // replace with the URL of your 
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 //to create campaigns
 export const createCampaign = async (req, res) => {
-  const { name, description, image, tags } = req.body;
+  const { name, description, image, tags, subtitle } = req.body;
   console.log(req.body);
 
   try {
@@ -19,6 +19,7 @@ export const createCampaign = async (req, res) => {
       description,
       image,
       tags,
+      subtitle,
       address,
     });
     await newCampaign.save();
@@ -144,3 +145,7 @@ export const disburseFunds = async (req, res) => {
     console.log(error);
   }
 };
+
+//add supported
+//Like campaign
+//remove like

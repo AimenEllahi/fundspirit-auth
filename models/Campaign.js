@@ -6,6 +6,10 @@ const CampaignSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    subtitle: {
+      type: String,
+      require: true,
+    },
     description: {
       type: String,
       require: true,
@@ -30,6 +34,9 @@ const CampaignSchema = new mongoose.Schema(
       type: Number,
       default: 0,
       min: 0,
+    },
+    supports: {
+      type: Array,
     },
   },
   { timestamps: true }

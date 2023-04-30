@@ -101,7 +101,7 @@ export const getOrganizationRequests = async (req, res) => {
 export const getNPO = async (req, res) => {
   const { id } = req.params;
   try {
-    const organization = await NPO.findById(id);
+       const organization = await NPO.findById(id);
 
     res.status(200).json(organization);
   } catch (error) {
