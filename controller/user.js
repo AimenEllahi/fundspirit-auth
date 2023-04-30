@@ -64,7 +64,6 @@ export const login = async (req, res) => {
 };
 
 export const getUsers = async (req, res) => {
-
   try {
     const user = await User.find();
 
@@ -89,7 +88,8 @@ export const addTransaction = async (req, res) => {
 
     console.log(existingUser._id);
     existingUser.transactions.push(details);
-    existingUser.campaignsFunded.push(details.campaign.id);
+    if (existingUser.campaignsFunded.indexOf(details.campaign.id) === -1)
+      existingUser.campaignsFunded.push(details.campaign.id);
     existingUser.totalFunding += details.amount;
     await existingUser.save();
 
