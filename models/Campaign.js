@@ -38,6 +38,9 @@ const CampaignSchema = new mongoose.Schema(
     supports: {
       type: Array,
     },
+    goals: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

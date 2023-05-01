@@ -12,8 +12,8 @@ export const createUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email: email });
-  if (existingUser)
-    return res.status(400).send("User with given email already exists");
+  console.log(existingUser);
+  if (existingUser) return res.status(400).send("Email Already Registered");
   const user = new User({
     name,
     email,
@@ -27,7 +27,7 @@ export const createUser = async (req, res) => {
 
     res.json(_.pick(savedUser, ["name", "email"]));
   } catch (err) {
-    res.json({ message: err });
+    res.json({ message: "Something went wrong" });
   }
 };
 
@@ -35,9 +35,13 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email: email });
-    if (!existingUser) return res.status(400).send("User is not registered");
+
+    if (!existingUser)
+      return res.status(400).send("Email or Password Incorrect");
+
     const isValid = await bcrypt.compare(password, existingUser.password);
-    if (!isValid) return res.status(401).send("Invalid Password");
+
+    if (!isValid) return res.status(401).send("Email or Password Incorrect");
     const token = jwt.sign(
       {
         _id: existingUser._id,
@@ -59,7 +63,7 @@ export const login = async (req, res) => {
       ]),
     });
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 

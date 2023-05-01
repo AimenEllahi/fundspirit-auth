@@ -2,6 +2,8 @@ import NPO from "../models/Organization.js";
 import Campaign from "../models/Campaign.js";
 import bcrypt from "bcryptjs";
 import Web3 from "web3";
+import _ from "lodash";
+
 import { sendEmail } from "../Utilities/NodeMailer.js";
 import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organization.json" assert { type: "json" };
 import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
@@ -82,6 +84,7 @@ export const deploySmartContract = async (id) => {
 export const getOrganizations = async (req, res) => {
   try {
     const organizations = await NPO.find({ isApproved: true });
+
     res.status(200).json(organizations);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -101,7 +104,7 @@ export const getOrganizationRequests = async (req, res) => {
 export const getNPO = async (req, res) => {
   const { id } = req.params;
   try {
-       const organization = await NPO.findById(id);
+    const organization = await NPO.findById(id);
 
     res.status(200).json(organization);
   } catch (error) {
@@ -162,16 +165,33 @@ export const login = async (req, res) => {
   try {
     const npo = await NPO.findOne({ email: email });
 
-    if (!npo) {
-      res.status(404).json({ message: "NPO not found" });
+    if (!npo) return res.status(404).send("Email or Password Incorrect");
 
-      return;
-    }
     const isPasswordCorrect = await bcrypt.compare(password, npo.password);
-    if (!isPasswordCorrect) {
-      res.status(400).json({ message: "Invalid credentials" });
-      return;
-    }
+
+    if (!isPasswordCorrect)
+      return res.status(400).send("Email or Password Incorrect");
+
+    // //pick everything except password
+    // const npoDetails = _.pick(npo, [
+    //   "addressHash",
+    //   "name",
+    //   "category",
+    //   "email",
+    //   "address",
+    //   "website",
+    //   "description",
+    //   "logo",
+    //   "coverImage",
+    //   "secp",
+    //   "ceoName",
+    //   "ceoEmail",
+    //   "ceoPhone",
+    //   "goals",
+    //   "requestedBy",
+    //   "foundThrough",
+    //   "isApproved",
+    // ]);
 
     res.status(200).json(npo);
   } catch (error) {

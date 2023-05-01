@@ -8,7 +8,7 @@ const web3 = new Web3("http://localhost:8545"); // replace with the URL of your 
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 //to create campaigns
 export const createCampaign = async (req, res) => {
-  const { name, description, image, tags, subtitle } = req.body;
+  const { name, description, image, tags, subtitle, goals } = req.body;
   console.log(req.body);
 
   try {
@@ -21,6 +21,7 @@ export const createCampaign = async (req, res) => {
       tags,
       subtitle,
       address,
+      goals,
     });
     await newCampaign.save();
     res.status(201).json(newCampaign);
