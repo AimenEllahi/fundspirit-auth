@@ -24,7 +24,6 @@ export const createCampaign = async (req, res) => {
     await newCampaign.save();
     res.status(201).json(newCampaign);
   } catch (error) {
-    console.log(error.message);
     res.status(409).json({ message: error.message });
   }
 };
@@ -98,11 +97,9 @@ export const disburseFunds = async (req, res) => {
     let balance = await web3.eth.getBalance(Organization.options.address);
     //convert to ether
     let etherBalance = await web3.utils.fromWei(balance, "ether");
-    console.log("Balance in org contract", etherBalance);
 
     balance = await web3.eth.getBalance(contract.options.address);
     etherBalance = await web3.utils.fromWei(balance, "ether");
-    console.log("Balance in capaign contract", etherBalance);
 
     await contract.methods.enrollOrganization(orgAddress).send({
       from: accounts[0],
@@ -128,17 +125,13 @@ export const disburseFunds = async (req, res) => {
     // // // //get the number of requests
     const npoCount = await contract.methods.getOrganizations().call();
 
-    console.log(npoCount);
-
     await contract.methods.disburseFunds().call();
 
     balance = await Organization.methods.getBalance().call();
     etherBalance = await web3.utils.fromWei(balance, "wei");
-    console.log(balance);
 
     balance = await web3.eth.getBalance(contract.options.address);
     etherBalance = await web3.utils.fromWei(balance, "wei");
-    console.log("Balance in capaign contract", etherBalance);
 
     res.status(200).json({ message: "Funds disbursed" });
   } catch (error) {

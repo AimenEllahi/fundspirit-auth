@@ -115,7 +115,7 @@ export const getNPO = async (req, res) => {
 
 export const approveNPO = async (req, res) => {
   const { id } = req.params;
-  console.log("Here");
+
   try {
     const organization = await NPO.findByIdAndUpdate(
       id,
@@ -170,7 +170,6 @@ export const login = async (req, res) => {
 
     if (!npo) return res.status(404).send("Email or Password Incorrect");
 
-    console.log("Here");
     const isPasswordCorrect = await bcrypt.compare(password, npo.password);
 
     if (!isPasswordCorrect)
@@ -218,8 +217,8 @@ export const enrollCampaign = async (req, res) => {
     const existingNPO = await NPO.findById(id);
     const existingCampaign = await Campaign.findById(campaignId);
     if (!existingNPO) return res.status(404).json({ message: "NPO not found" });
+
     if (existingNPO.campaigns.includes(campaignId)) {
-      console.log("Already enrolled");
       res.status(400).json({ message: "Already enrolled" });
       return;
     }

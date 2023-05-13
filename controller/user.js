@@ -12,7 +12,7 @@ export const createUser = async (req, res) => {
   const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email: email });
-  console.log(existingUser);
+
   if (existingUser) return res.status(400).send("Email Already Registered");
   const user = new User({
     name,
