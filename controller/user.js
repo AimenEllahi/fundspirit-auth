@@ -83,18 +83,17 @@ export const addTransaction = async (req, res) => {
   const details = req.body;
   const { id } = req.params;
   try {
-    console.log(id);
     const existingUser = await User.findById(id);
     if (!existingUser) {
       res.status(404).json({ message: "User Not Found" });
       return;
     }
 
-    console.log(existingUser._id);
     existingUser.transactions.push(details);
-    if (existingUser.campaignsFunded.indexOf(details.campaign.id) === -1)
+    if (existingUser.campaignsFunded.indexOf(details.campaign.id) === -1) {
       existingUser.campaignsFunded.push(details.campaign.id);
-    existingUser.totalFunding += details.amount;
+    }
+    existingUser.totalFunding += Number(details.amount);
     await existingUser.save();
 
     res.status(200).json(existingUser);

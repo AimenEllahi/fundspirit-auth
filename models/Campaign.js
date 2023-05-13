@@ -29,6 +29,11 @@ const CampaignSchema = new mongoose.Schema(
     },
     lastDisburse: {
       type: Date,
+      default: null,
+    },
+    totalFundings: {
+      type: Number,
+      default: 0,
     },
     likes: {
       type: Number,

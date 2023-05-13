@@ -114,6 +114,7 @@ export const getNPO = async (req, res) => {
 
 export const approveNPO = async (req, res) => {
   const { id } = req.params;
+  console.log("Here");
   try {
     const organization = await NPO.findByIdAndUpdate(
       id,
@@ -124,7 +125,8 @@ export const approveNPO = async (req, res) => {
     sendEmail(organization.email, organization.name, organization._id);
     res.status(200).json(organization);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -167,6 +169,7 @@ export const login = async (req, res) => {
 
     if (!npo) return res.status(404).send("Email or Password Incorrect");
 
+    console.log("Here");
     const isPasswordCorrect = await bcrypt.compare(password, npo.password);
 
     if (!isPasswordCorrect)

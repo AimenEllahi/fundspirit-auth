@@ -9,8 +9,6 @@ const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 //to create campaigns
 export const createCampaign = async (req, res) => {
   const { name, description, image, tags, subtitle, goals } = req.body;
-  console.log(req.body);
-
   try {
     const address = await deploySmartContract();
 
@@ -26,6 +24,7 @@ export const createCampaign = async (req, res) => {
     await newCampaign.save();
     res.status(201).json(newCampaign);
   } catch (error) {
+    console.log(error.message);
     res.status(409).json({ message: error.message });
   }
 };

@@ -20,7 +20,6 @@ router.get("/", getOrganizations);
 router.get("/requests",auth, admin, getOrganizationRequests);
 router.get("/:id", getNPO);
 router.put("/approve/:id",auth, admin, approveNPO);
-
 router.get("/createpassword/:id", passwordView);
 router.post("/createpassword/:id", setPassword);
 router.post("/login", login);
