@@ -1,6 +1,7 @@
 import NPO from "../models/Organization.js";
 import Campaign from "../models/Campaign.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import Web3 from "web3";
 import _ from "lodash";
 
@@ -175,6 +176,14 @@ export const login = async (req, res) => {
     if (!isPasswordCorrect)
       return res.status(400).send("Email or Password Incorrect");
 
+    const token = jwt.sign(
+      {
+        _id: npo._id,
+        name: npo.name,
+      },
+      process.env.jwtPrivateKey
+    );
+
     // //pick everything except password
     // const npoDetails = _.pick(npo, [
     //   "addressHash",
@@ -196,7 +205,7 @@ export const login = async (req, res) => {
     //   "isApproved",
     // ]);
 
-    res.status(200).json(npo);
+    res.status(200).json({ token, npo });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
   }
