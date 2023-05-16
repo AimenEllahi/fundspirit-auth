@@ -9,6 +9,7 @@ const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 //to create campaigns
 export const createCampaign = async (req, res) => {
   const { name, description, image, tags, subtitle, goals } = req.body;
+
   try {
     const address = await deploySmartContract();
 
@@ -33,6 +34,21 @@ export const getCampaigns = async (req, res) => {
   try {
     const campaigns = await Campaign.find();
     res.status(200).json(campaigns);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+//to get  campaign
+export const getCampaign = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const campaign = await Campaign.findById(id);
+
+    if (!campaign) {
+      return res.status(404).json({ message: "Campaign not found" });
+    }
+
+    res.status(200).json(campaign);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

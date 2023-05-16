@@ -153,7 +153,9 @@ export const setPassword = async (req, res) => {
         { password: hashedPassword },
         { new: true }
       );
-      res.status(200).json(npo);
+      res.render("passwordSet", {
+        message: "Password Set, You can now login to FundSpirit",
+      });
     } catch (error) {
       res.status(500).json({
         message: "Something went wrong",
