@@ -14,7 +14,7 @@ import ejs from "ejs";
 
 import { fileURLToPath } from "url";
 import path from "path";
-import { main } from "./Utilities/CroneJob.js";
+import { task } from "./Utilities/CroneJob.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 //Configuration
@@ -53,7 +53,7 @@ mongoose
   })
   .then(() => {
     app.listen(PORT, () => console.log("Server Running on Port: ", PORT));
-    // main();
+    task();
   })
   .catch((error) => {
     console.log(error);

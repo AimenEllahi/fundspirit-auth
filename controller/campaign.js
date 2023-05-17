@@ -79,6 +79,25 @@ export const deploySmartContract = async () => {
   }
 };
 
+export const fundCampaign = async (req, res) => {
+  const { id } = req.params;
+  const { amount } = req.body;
+
+  try {
+    const campaign = await Campaign.findById(id);
+    if (!campaign) {
+      return res.status(404).send("Campaign not found");
+    }
+    await Campaign.findByIdAndUpdate(
+      id,
+      { totalFundings: Number(campaign?.totalFundings) + Number(amount) },
+      { new: true }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export const deleteAll = async (req, res) => {
   try {
     await Campaign.deleteMany();

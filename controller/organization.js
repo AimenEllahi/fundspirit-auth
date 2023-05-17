@@ -36,7 +36,7 @@ export const createOrganization = async (req, res) => {
       addressHash,
       name,
       category,
-      email,
+      email: email.toLowerCase(),
       address,
       website,
       description,
@@ -168,7 +168,7 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const npo = await NPO.findOne({ email: email });
+    const npo = await NPO.findOne({ email: email.toLowerCase() });
 
     if (!npo) return res.status(404).send("Email or Password Incorrect");
 
@@ -221,8 +221,7 @@ export const enrollCampaign = async (req, res) => {
     if (!existingNPO) return res.status(404).json({ message: "NPO not found" });
 
     if (existingNPO.campaigns.includes(campaignId)) {
-      res.status(400).json({ message: "Already enrolled" });
-      return;
+      return res.status(400).json({ message: "Already enrolled" });
     }
     if (existingNPO.campaigns.length >= 3)
       return res
