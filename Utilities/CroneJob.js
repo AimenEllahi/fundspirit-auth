@@ -16,30 +16,25 @@ const web3 = new Web3("http://localhost:8545"); //
 export const task = async () => {
   const accounts = await web3.eth.getAccounts();
   const job = cron.schedule("*/10 * * * * *", async () => {
-    console.log("running a task every minute");
-
     try {
       const campaigns = await Campaign.find();
+      console.log("Distributing");
       campaigns.forEach(async (campaign) => {
-        if (campaign._id.toString() === "6463e61db1341f06ad516b84") {
-          try {
-            console.log("Here");
-            let now = new Date();
-            //updates disbure date
-            await Campaign.findByIdAndUpdate(campaign._id, {
-              disburseDate: now,
-            });
-
-            const contractInstance = await new web3.eth.Contract(
-              CampaignAbi.abi,
-              campaign.address
-            );
-            await contractInstance.methods.disburseFunds().send({
-              from: accounts[0],
-            });
-          } catch (error) {
-            console.log(error);
-          }
+        try {
+          let now = new Date();
+          //updates disbure date
+          await Campaign.findByIdAndUpdate(campaign._id, {
+            disburseDate: now,
+          });
+          const contractInstance = await new web3.eth.Contract(
+            CampaignAbi.abi,
+            campaign.address
+          );
+          await contractInstance.methods.disburseFunds().send({
+            from: accounts[0],
+          });
+        } catch (error) {
+          console.log("");
         }
       });
     } catch (error) {

@@ -102,3 +102,73 @@ export const addTransaction = async (req, res) => {
     res.status(500).json({ Message: "Something Went Wrong" });
   }
 };
+
+//edit information
+export const editUser = async (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+  try {
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      res.status(404).json({ message: "User Not Found" });
+      return;
+    }
+    existingUser.name = name;
+    existingUser.email = email;
+
+    await existingUser.save();
+
+    const token = jwt.sign(
+      {
+        _id: existingUser._id,
+        name: existingUser.name,
+      },
+      process.env.jwtPrivateKey
+    );
+
+    res.status(200).send({
+      token,
+      user: _.pick(existingUser, [
+        "name",
+        "email",
+        "role",
+        "_id",
+        "campaignsFunded",
+        "campaignsLiked",
+        "transactions",
+        "totalFunding",
+      ]),
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Something Went Wrong");
+  }
+};
+
+//edit password
+export const editPassword = async (req, res) => {
+  const { id } = req.params;
+  const { password, newPassword } = req.body;
+
+  try {
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      res.status(404).json({ message: "User Not Found" });
+      return;
+    }
+
+    const isValid = await bcrypt.compare(password, existingUser.password);
+
+    if (!isValid) return res.status(401).send("Current Password Incorrect");
+
+    existingUser.password = newPassword;
+
+    await existingUser.generateHashedPassword();
+    await existingUser.save();
+
+    res.status(200).send();
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Something Went Wrong");
+  }
+};
