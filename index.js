@@ -30,16 +30,23 @@ app.use(cookieParser());
 app.set("view engine", "ejs");
 
 app.set("views", __dirname + "/views");
+
 app.use("/api/users/", userRoutes);
-//for campaign routes
 app.use("/api/campaigns/", campaignRoutes);
-//for organization routes
 app.use("/api/npos/", organizationRoutes);
 
-// app.get("/send-email", (req, res) => {
-//   sendEmail("hananmunir471@gmail.com", "Hanan", "12311321");
-//   res.status(200).json({ message: "Email Sent" });
-// });
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Internal Server Error";
+
+  res.status(errorStatus).json({
+    success: false,
+    status: errorStatus,
+    message: errorMessage,
+    stack: err.stack,
+  });
+});
+
 //testing
 app.get("/", (req, res) =>
   res.status(200).json({ message: "Everything Works Fine" })
@@ -53,8 +60,10 @@ mongoose
   })
   .then(() => {
     app.listen(PORT, () => console.log("Server Running on Port: ", PORT));
-    task();
+    // task();
   })
   .catch((error) => {
     console.log(error);
   });
+
+export default app;

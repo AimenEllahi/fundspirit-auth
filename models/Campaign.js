@@ -6,6 +6,9 @@ const CampaignSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    image: {
+      type: String,
+    },
     subtitle: {
       type: String,
       require: true,

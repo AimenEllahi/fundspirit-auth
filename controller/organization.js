@@ -2,14 +2,21 @@ import NPO from "../models/Organization.js";
 import Campaign from "../models/Campaign.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Web3 from "web3";
+import { web3Staging, web3Dev } from "../Services/Web3.js";
 import _ from "lodash";
-
 import { sendEmail } from "../Utilities/NodeMailer.js";
-import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organization.json" assert { type: "json" };
 import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
-const web3 = new Web3("http://localhost:8545"); // replace with the URL of your Ethereum node
+import { deploySmartContract } from "../Utilities/Deployments/Development/NPO.js";
+import { deployContract } from "../Utilities/Deployments/Staging/NPO.js";
+
+//dev
+const web3 = web3Dev;
+
+//staging
+// const web3 = web3Staging;
+
 const accounts = await web3.eth.getAccounts();
+
 export const createOrganization = async (req, res) => {
   const {
     name,
@@ -31,7 +38,10 @@ export const createOrganization = async (req, res) => {
   } = req.body;
 
   try {
+    //dev
     const addressHash = await deploySmartContract();
+    //staging
+    // const addressHash = await deployContract();
     const newOrganization = new NPO({
       addressHash,
       name,
@@ -56,29 +66,6 @@ export const createOrganization = async (req, res) => {
     res.status(201).json(newOrganization);
   } catch (error) {
     res.status(409).json({ message: error.message });
-  }
-};
-
-export const deploySmartContract = async (id) => {
-  try {
-    const Contract = new web3.eth.Contract(OrganizationAbi.abi);
-    const gasPrice = await web3.eth.getGasPrice();
-    const gasEstimate = await Contract.deploy({
-      data: OrganizationAbi.bytecode,
-    }).estimateGas();
-    const contractInstance = await Contract.deploy({
-      data: OrganizationAbi.bytecode,
-    })
-      .send({
-        from: accounts[0],
-        gas: gasEstimate,
-        gasPrice,
-      })
-      .on("receipt", (receipt) => {});
-
-    return contractInstance.options.address;
-  } catch (error) {
-    return error;
   }
 };
 

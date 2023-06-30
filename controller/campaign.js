@@ -1,28 +1,61 @@
-//to make get and create methods for campaigns
 import Campaign from "../models/Campaign.js";
-import Web3 from "web3";
-import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
-import OrganizationAbi from "../artifacts/contracts/Organization.sol/Organization.json" assert { type: "json" };
-import { deploySmartContract as orgContract } from "./organization.js";
-const web3 = new Web3("http://localhost:8545"); // replace with the URL of your Ethereum node
-const provider = new Web3.providers.HttpProvider("http://localhost:8545");
+import fs from "fs";
+import util from "util";
+import { createError } from "../Utilities/Error.js";
+import { uploadFile, getFileStream, deleteFile } from "../Services/S3.js";
+import { deployContract } from "../Utilities/Deployments/Staging/Campaign.js";
+import { deploySmartContract } from "../Utilities/Deployments/Development/Campaign.js";
+
+const unlinkFile = util.promisify(fs.unlink);
+
+//Uses ID to download images from s3 bucket
+export const getImage = async (req, res, next) => {
+  const key = req.params.id;
+
+  //if key no provided
+  if (key == "undefined") return next(createError(404, "Image not found"));
+
+  //download image and render it
+  try {
+    const readStream = getFileStream(key);
+    readStream
+      .on("error", (err) => {
+        next(createError(404, "Image not found"));
+      })
+      .pipe(res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 //to create campaigns
 export const createCampaign = async (req, res) => {
-  const { name, description, image, tags, subtitle, goals } = req.body;
+  const { name, description, tags, subtitle, goals } = req.body;
 
   try {
-    const address = await deploySmartContract();
+    //development
+    address = await deploySmartContract();
+
+    //staging
+    //address = await deployContract();
+
+    //upload image to s3
+    let result = await uploadFile(req.file);
+
+    //deletes the file from local storage
+    await unlinkFile(req.file.path);
 
     const newCampaign = new Campaign({
       name,
       description,
-      image,
       tags,
       subtitle,
+      image: result.Key,
       address,
       goals,
     });
     await newCampaign.save();
+    console.log(newCampaign);
     res.status(201).json(newCampaign);
   } catch (error) {
     res.status(409).json({ message: error.message });
@@ -54,31 +87,6 @@ export const getCampaign = async (req, res) => {
   }
 };
 
-export const deploySmartContract = async () => {
-  const accounts = await web3.eth.getAccounts();
-  try {
-    const Contract = new web3.eth.Contract(CampaignAbi.abi);
-    const gasPrice = await web3.eth.getGasPrice();
-    const gasEstimate = await Contract.deploy({
-      data: CampaignAbi.bytecode,
-    }).estimateGas();
-    const contractInstance = await Contract.deploy({
-      data: CampaignAbi.bytecode,
-    })
-      .send({
-        from: accounts[0],
-        gas: gasEstimate,
-        gasPrice,
-      })
-      .on("receipt", (receipt) => {});
-
-    return contractInstance.options.address;
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-
 export const fundCampaign = async (req, res) => {
   const { id } = req.params;
   const { amount } = req.body;
@@ -104,73 +112,6 @@ export const deleteAll = async (req, res) => {
     res.status(200).json({ message: "All campaigns deleted" });
   } catch (error) {
     res.status(404).json({ message: error.message });
-  }
-};
-
-export const disburseFunds = async (req, res) => {
-  try {
-    const campaign = await Campaign.findById("64235a10d9c435546517d872");
-
-    //deploy the contract
-    const address = await deploySmartContract();
-    let orgAddress = await orgContract();
-    const accounts = await web3.eth.getAccounts();
-
-    const contract = await new web3.eth.Contract(CampaignAbi.abi, address);
-    const Organization = await new web3.eth.Contract(
-      OrganizationAbi.abi,
-      orgAddress
-    );
-
-    await contract.methods.fund().send({
-      from: accounts[0],
-      value: web3.utils.toWei("4", "ether"),
-    });
-
-    // //get the balance of the contract
-
-    let balance = await web3.eth.getBalance(Organization.options.address);
-    //convert to ether
-    let etherBalance = await web3.utils.fromWei(balance, "ether");
-
-    balance = await web3.eth.getBalance(contract.options.address);
-    etherBalance = await web3.utils.fromWei(balance, "ether");
-
-    await contract.methods.enrollOrganization(orgAddress).send({
-      from: accounts[0],
-    });
-
-    orgAddress = await orgContract();
-
-    await contract.methods.enrollOrganization(orgAddress).send({
-      from: accounts[0],
-    });
-
-    orgAddress = await orgContract();
-
-    await contract.methods.enrollOrganization(orgAddress).send({
-      from: accounts[0],
-    });
-    orgAddress = await orgContract();
-
-    await contract.methods.enrollOrganization(orgAddress).send({
-      from: accounts[0],
-    });
-
-    // // // //get the number of requests
-    const npoCount = await contract.methods.getOrganizations().call();
-
-    await contract.methods.disburseFunds().call();
-
-    balance = await Organization.methods.getBalance().call();
-    etherBalance = await web3.utils.fromWei(balance, "wei");
-
-    balance = await web3.eth.getBalance(contract.options.address);
-    etherBalance = await web3.utils.fromWei(balance, "wei");
-
-    res.status(200).json({ message: "Funds disbursed" });
-  } catch (error) {
-    console.log(error);
   }
 };
 

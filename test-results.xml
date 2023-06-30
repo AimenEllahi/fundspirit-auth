@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Mocha Tests" time="6.647" tests="3" failures="0">
+  <testsuite name="Root Suite" timestamp="2023-06-01T21:50:42" tests="0" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Backend API Tests-" timestamp="2023-06-01T21:50:42" tests="0" file="D:\Code\fundspirit-auth\test\api.test.js" time="0.000" failures="0">
+  </testsuite>
+  <testsuite name="Campaigns-" timestamp="2023-06-01T21:50:42" tests="2" file="D:\Code\fundspirit-auth\test\api.test.js" time="3.334" failures="0">
+    <testcase name="Backend API Tests-Campaigns- Should get campaigns from database" time="3.307" classname="Should get campaigns from database">
+    </testcase>
+    <testcase name="Backend API Tests- Campaigns- Should not create a new campaign if user unauthorized" time="0.022" classname="Should not create a new campaign if user unauthorized">
+    </testcase>
+  </testsuite>
+  <testsuite name="User-" timestamp="2023-06-01T21:50:45" tests="1" file="D:\Code\fundspirit-auth\test\api.test.js" time="0.729" failures="0">
+    <testcase name="Backend API Tests- User- Should register a new user" time="0.729" classname="Should register a new user">
+    </testcase>
+  </testsuite>
+</testsuites>
