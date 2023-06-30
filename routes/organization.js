@@ -10,6 +10,7 @@ import {
   login,
   enrollCampaign,
   unEnroll,
+  deductFunds
 } from "../controller/organization.js";
 import auth from "../middlewares/auth.js";
 import admin from "../middlewares/admin.js";
@@ -26,6 +27,9 @@ router.get("/createpassword/:id", verifyPassword, passwordView);
 router.post("/createpassword/:id", setPassword);
 router.post("/login", login);
 router.put("/enroll", npoAuth, enrollCampaign);
+
+//test route for deduct funds
+router.put("/deduct/:id", deductFunds);
 
 //test route
 router.get("/unenroll/:id", unEnroll);
