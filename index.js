@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 import organizationRoutes from "./routes/organization.js";
+import estoreRoutes from "./routes/estore.js";
 
 import { sendEmail } from "./Utilities/NodeMailer.js";
 import ejs from "ejs";
@@ -35,6 +36,8 @@ app.use("/api/users/", userRoutes);
 app.use("/api/campaigns/", campaignRoutes);
 //for organization routes
 app.use("/api/npos/", organizationRoutes);
+//for estore routes
+app.use("/api/estore/", estoreRoutes);
 
 // app.get("/send-email", (req, res) => {
 //   sendEmail("hananmunir471@gmail.com", "Hanan", "12311321");

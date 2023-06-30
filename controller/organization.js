@@ -275,27 +275,27 @@ export const unEnroll = async (req, res) => {
   } catch (err) {}
 };
 
-export const deductFunds = async (req, res) => {
-  const { npoId, amount } = req.body;
+// export const deductFunds = async (req, res) => {
+//   const { npoId, amount } = req.body;
 
-  try {
-    // Find the NPO by ID
-    const npo = await NPO.findById(npoId);
-    if (!npo) {
-      return res.status(404).json({ message: "NPO not found" });
-    }
+//   try {
+//     // Find the NPO by ID
+//     const npo = await NPO.findById(npoId);
+//     if (!npo) {
+//       return res.status(404).json({ message: "NPO not found" });
+//     }
 
-    // Deduct funds from the NPO's account/wallet
-    const npoContract = new web3.eth.Contract(OrganizationAbi.abi, npo.addressHash);
-    await npoContract.methods.deductFunds(amount).send({
-      from: npo.walletAddress, // Assuming the NPO has a wallet address associated
-    });
+//     // Deduct funds from the NPO's account/wallet
+//     const npoContract = new web3.eth.Contract(OrganizationAbi.abi, npo.addressHash);
+//     await npoContract.methods.deductFunds(amount).send({
+//       from: npo.walletAddress, // Assuming the NPO has a wallet address associated
+//     });
 
-    // Calculate the remaining balance after deducting the transfer amount
-    const remainingBalance = await npoContract.methods.getBalance().call();
+//     // Calculate the remaining balance after deducting the transfer amount
+//     const remainingBalance = await npoContract.methods.getBalance().call();
 
-    res.status(200).json({ remainingBalance });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to deduct funds", error: error.message });
-  }
-};
+//     res.status(200).json({ remainingBalance });
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to deduct funds", error: error.message });
+//   }
+// };
