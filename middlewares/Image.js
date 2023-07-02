@@ -11,6 +11,7 @@ export const upload = multer({
 });
 
 export const checkFileType = (req, res, next) => {
+  
   // check if the file is an image
   const file = req.file;
   console.log(file);

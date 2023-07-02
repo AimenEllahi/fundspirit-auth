@@ -96,7 +96,18 @@ export const addTransaction = async (req, res) => {
     existingUser.totalFunding += Number(details.amount);
     await existingUser.save();
 
-    res.status(200).json(existingUser);
+    res.status(200).json({
+      user: _.pick(existingUser, [
+        "name",
+        "email",
+        "role",
+        "_id",
+        "campaignsFunded",
+        "campaignsLiked",
+        "transactions",
+        "totalFunding",
+      ]),
+    });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ Message: "Something Went Wrong" });

@@ -1,13 +1,8 @@
 import cron from "node-cron";
 import Campaign from "../models/Campaign.js";
 import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
-import { web3Dev, web3Staging } from "../Services/Web3.js";
+import web3 from "../Services/Web3.js";
 
-//dev
-const web3 = web3Dev;
-
-//staging
-//const web3 = web3Staging;
 export const task = async () => {
   const accounts = await web3.eth.getAccounts();
   const job = cron.schedule("*/10 * * * * *", async () => {

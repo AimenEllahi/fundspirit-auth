@@ -2,18 +2,11 @@ import NPO from "../models/Organization.js";
 import Campaign from "../models/Campaign.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { web3Staging, web3Dev } from "../Services/Web3.js";
+import web3 from "../Services/Web3.js";
 import _ from "lodash";
 import { sendEmail } from "../Utilities/NodeMailer.js";
 import CampaignAbi from "../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
-import { deploySmartContract } from "../Utilities/Deployments/Development/NPO.js";
-import { deployContract } from "../Utilities/Deployments/Staging/NPO.js";
-
-//dev
-const web3 = web3Dev;
-
-//staging
-// const web3 = web3Staging;
+import deployContract from "../Utilities/Deployments/NPO.js";
 
 const accounts = await web3.eth.getAccounts();
 
@@ -39,9 +32,8 @@ export const createOrganization = async (req, res) => {
 
   try {
     //dev
-    const addressHash = await deploySmartContract();
-    //staging
-    // const addressHash = await deployContract();
+    const addressHash = await deployContract();
+
     const newOrganization = new NPO({
       addressHash,
       name,
@@ -273,7 +265,10 @@ export const deductFunds = async (req, res) => {
     }
 
     // Deduct funds from the NPO's account/wallet
-    const npoContract = new web3.eth.Contract(OrganizationAbi.abi, npo.addressHash);
+    const npoContract = new web3.eth.Contract(
+      OrganizationAbi.abi,
+      npo.addressHash
+    );
     await npoContract.methods.deductFunds(amount).send({
       from: npo.walletAddress, // Assuming the NPO has a wallet address associated
     });
@@ -283,6 +278,8 @@ export const deductFunds = async (req, res) => {
 
     res.status(200).json({ remainingBalance });
   } catch (error) {
-    res.status(500).json({ message: "Failed to deduct funds", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to deduct funds", error: error.message });
   }
 };

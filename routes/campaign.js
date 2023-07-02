@@ -13,15 +13,15 @@ import { upload, checkFileType } from "../middlewares/Image.js";
 
 const router = express.Router();
 
-// router.post(
-//   "/create",
-//   upload.single("image"),
-//   auth,
-//   admin,
-//   checkFileType,
-//   createCampaign
-// );
-router.post("/create", createCampaign);
+router.post(
+  "/create",
+  upload.single("image"),
+  auth,
+  admin,
+  checkFileType,
+  createCampaign
+);
+
 router.get("/images/:id", getImage);
 router.get("/", getCampaigns);
 router.get("/:id", getCampaign);

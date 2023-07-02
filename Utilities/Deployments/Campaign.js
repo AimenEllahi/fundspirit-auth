@@ -1,6 +1,6 @@
-import Campaign from "../../../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
-import { web3Dev as web3 } from "../../../Services/Web3.js";
-export const deploySmartContract = async () => {
+import Campaign from "../../artifacts/contracts/Campaign.sol/Campaign.json" assert { type: "json" };
+import web3 from "../../Services/Web3.js";
+const deployContract = async () => {
   const accounts = await web3.eth.getAccounts();
   try {
     const Contract = new web3.eth.Contract(Campaign.abi);
@@ -18,6 +18,9 @@ export const deploySmartContract = async () => {
       })
       .on("receipt", (receipt) => {
         console.log(receipt);
+      })
+      .on("error", (error) => {
+        console.log(error);
       });
 
     return contractInstance.options.address;
@@ -26,5 +29,7 @@ export const deploySmartContract = async () => {
     return error;
   }
 };
+
+export default deployContract;
 
 //0x2945bfbdd1a80363e4ccc7fa451e8d42d51e3a0b;

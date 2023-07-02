@@ -10,7 +10,7 @@ const provider = new HDWalletProvider({
   providerOrUrl: GOERLI_RPC_URL,
 });
 
-const web3Staging = new Web3(provider);
-const web3Dev = new Web3("http://localhost:8545");
+//const web3 = new Web3(provider);
+const web3 = new Web3("http://localhost:8545");
 
-export { web3Staging, web3Dev };
+export default web3;

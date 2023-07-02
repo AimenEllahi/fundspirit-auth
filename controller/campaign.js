@@ -3,8 +3,7 @@ import fs from "fs";
 import util from "util";
 import { createError } from "../Utilities/Error.js";
 import { uploadFile, getFileStream, deleteFile } from "../Services/S3.js";
-import { deployContract } from "../Utilities/Deployments/Staging/Campaign.js";
-import { deploySmartContract } from "../Utilities/Deployments/Development/Campaign.js";
+import deployContract from "../Utilities/Deployments/Campaign.js";
 
 const unlinkFile = util.promisify(fs.unlink);
 
@@ -34,10 +33,7 @@ export const createCampaign = async (req, res) => {
 
   try {
     //development
-    address = await deploySmartContract();
-
-    //staging
-    //address = await deployContract();
+    const address = await deployContract();
 
     //upload image to s3
     let result = await uploadFile(req.file);
@@ -58,6 +54,7 @@ export const createCampaign = async (req, res) => {
     console.log(newCampaign);
     res.status(201).json(newCampaign);
   } catch (error) {
+    console.log(error.message);
     res.status(409).json({ message: error.message });
   }
 };
