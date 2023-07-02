@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 import organizationRoutes from "./routes/organization.js";
+import estoreRoutes from "./routes/estore.js";
 
 import { sendEmail } from "./Utilities/NodeMailer.js";
 import ejs from "ejs";
@@ -34,6 +35,8 @@ app.set("views", __dirname + "/views");
 app.use("/api/users/", userRoutes);
 app.use("/api/campaigns/", campaignRoutes);
 app.use("/api/npos/", organizationRoutes);
+//for estore routes
+app.use("/api/estore/", estoreRoutes);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
