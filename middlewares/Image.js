@@ -21,7 +21,8 @@ export const checkFileType = (req, res, next) => {
   if (
     file.mimetype !== "image/jpeg" &&
     file.mimetype !== "image/webp" &&
-    file.mimetype !== "image/png"
+    file.mimetype !== "image/png" &&
+    file.mimetype !== "image/jpg"
   ) {
     console.log("File Type not supported");
     return next(createError(400, "File type not supported"));

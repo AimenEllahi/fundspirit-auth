@@ -1,33 +1,42 @@
 import mongoose from "mongoose";
 
-const EstoresSchema = new mongoose.Schema({
+const EstoresSchema = new mongoose.Schema(
+  {
     //price, productid, quantity, npoid, date, sellerid, transactionhash
     price: {
-        type: Number,
-        
+      type: Number,
     },
     productid: {
-        type: String,
-       
+      type: String,
     },
     quantity: {
-        type: Number,
-     
+      type: Number,
     },
     npoId: {
-        type: String,
+      type: String,
     },
     date: {
-        type: Date,
-        default: Date.now,
+      type: Date,
+      default: Date.now,
     },
-    sellerId: {
-        type: String,
+    vendor: {
+      type: String,
     },
-    transactionhash: {
-        type: String,
+    transactionHash: {
+      type: String,
+      default: null,
     },
-});
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    orderStatus: {
+      type: String,
+      default: "Pending",
+    },
+  },
+  { timestamps: true }
+);
 
 const Estore = mongoose.model("Estore", EstoresSchema);
 export default Estore;

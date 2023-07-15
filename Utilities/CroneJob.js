@@ -8,21 +8,29 @@ export const task = async () => {
   const job = cron.schedule("*/10 * * * * *", async () => {
     try {
       const campaigns = await Campaign.find();
-      console.log("Distributing");
+
+      console.log("------------------");
+      console.log("Running Cron Job");
+      console.log("------------------");
+
       campaigns.forEach(async (campaign) => {
         try {
           let now = new Date();
-          //updates disbure date
-          await Campaign.findByIdAndUpdate(campaign._id, {
-            disburseDate: now,
-          });
-          const contractInstance = await new web3.eth.Contract(
-            CampaignAbi.abi,
-            campaign.address
-          );
-          await contractInstance.methods.disburseFunds().send({
-            from: accounts[0],
-          });
+
+          if (campaign.enrolledNPOs.length > 0) {
+            //updates disbure date
+            await Campaign.findByIdAndUpdate(campaign._id, {
+              disburseDate: now,
+            });
+
+            const contractInstance = await new web3.eth.Contract(
+              CampaignAbi.abi,
+              campaign.address
+            );
+            await contractInstance.methods.disburseFunds().send({
+              from: accounts[0],
+            });
+          }
         } catch (error) {
           console.log("");
         }
